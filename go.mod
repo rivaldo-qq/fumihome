@@ -11,7 +11,6 @@ require (
 	github.com/joho/godotenv v1.5.1
 	github.com/lib/pq v1.10.9
 	github.com/patrickmn/go-cache v2.1.0+incompatible
-	github.com/supabase-community/storage-go v0.7.0
 	github.com/xendit/xendit-go v1.0.25
 	golang.org/x/crypto v0.35.0
 	google.golang.org/grpc v1.70.0
