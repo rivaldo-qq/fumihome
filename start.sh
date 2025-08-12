@@ -1,19 +1,36 @@
-#!/bin/bash
+FROM golang:1.23 AS builder
 
-# Jalanin gRPC server di background
-./grpc_server &
+WORKDIR /app
 
-# Jalanin REST server di background
-./rest_server &
+# Copy go.mod dan go.sum lalu download dependency
+COPY go.mod go.sum ./
+RUN go mod download
 
-# Jalanin grpcwebproxy (ubah backend_addr sesuai gRPC port)
-./grpcwebproxy \
-    --backend_addr=localhost:50052 \
-    --server_bind_address=0.0.0.0 \
-    --server_http_debug_port=8080 \
-    --run_tls_server=false \
-    --backend_max_call_recv_msg_size=577659248 \
-    --allow_all_origins &
+# Install protoc dan plugin Go
+RUN apt-get update && apt-get install -y protobuf-compiler
+RUN go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
+RUN go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
 
-# Tunggu semua proses
-wait -n
+# Copy semua source code
+COPY . .
+
+# Generate file proto
+RUN protoc --go_out=./pb --go-grpc_out=./pb --proto_path=./proto \
+    --go_opt=paths=source_relative \
+    --go-grpc_opt=paths=source_relative service/service.proto
+
+# Build REST
+RUN go build -o ./bin/rest ./cmd/rest/main.go
+
+# Build gRPC
+RUN go build -o ./bin/grpc ./cmd/grpc/main.go
+
+# Stage final image
+FROM gcr.io/distroless/base-debian12
+COPY --from=builder /app/bin /bin
+COPY start.sh /bin/start.sh
+WORKDIR /bin
+
+RUN chmod +x /bin/start.sh
+
+CMD ["./start.sh"]
