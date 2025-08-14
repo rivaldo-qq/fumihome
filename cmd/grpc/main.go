@@ -22,6 +22,8 @@ import (
 	"github.com/xendit/xendit-go"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
+	"github.com/improbable-eng/grpc-web/go/grpcweb"
+	"github.com/rs/cors"
 )
 
 func main() {
