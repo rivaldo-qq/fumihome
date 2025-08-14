@@ -22,8 +22,6 @@ import (
 	"github.com/xendit/xendit-go"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
-	"github.com/improbable-eng/grpc-web/go/grpcweb"
-	"github.com/rs/cors"
 )
 
 func main() {
@@ -76,27 +74,6 @@ func main() {
 	cart.RegisterCartServiceServer(serv, cartHandler)
 	order.RegisterOrderServiceServer(serv, orderHandler)
 	newsletter.RegisterNewsletterServiceServer(serv, newsletterHandler)
-
-		wrappedGrpc := grpcweb.WrapServer(serv,
-		grpcweb.WithOriginFunc(func(origin string) bool { return true }), // boleh semua origin
-	)
-
-	// Setup CORS middleware
-	corsHandler := cors.New(cors.Options{
-		AllowedOrigins:   []string{"*"}, // bisa diganti ke domain spesifik biar lebih aman
-		AllowedMethods:   []string{"GET", "POST", "OPTIONS"},
-		AllowedHeaders:   []string{"*"},
-		AllowCredentials: true,
-	})
-
-	// Handler utama
-	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if wrappedGrpc.IsGrpcWebRequest(r) || wrappedGrpc.IsAcceptableGrpcCorsRequest(r) || wrappedGrpc.IsGrpcWebSocketRequest(r) {
-			wrappedGrpc.ServeHTTP(w, r)
-		} else {
-			w.WriteHeader(http.StatusNotFound)
-		}
-	})
 	
 	if os.Getenv("ENVIRONMENT") == "dev" {
 		reflection.Register(serv)
