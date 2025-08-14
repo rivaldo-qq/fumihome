@@ -30,7 +30,7 @@ func main() {
 
 	xendit.Opt.SecretKey = os.Getenv("XENDIT_SECRET")
 
-	lis, err := net.Listen("tcp", ":50052")
+	lis, err := net.Listen("tcp", "0.0.0.0:50052")
 	if err != nil {
 		log.Panicf("Error when listening %v", err)
 	}
