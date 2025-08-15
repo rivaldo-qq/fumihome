@@ -39,7 +39,7 @@ func (ps *productService) CreateProduct(ctx context.Context, request *product.Cr
 	}
 
 	// cek juga apakah image nya ada ?
-	imagePath := filepath.Join("storage", "product", request.ImageFileName)
+	imagePath := filepath.Join("https://lqskpaecrquwwsezlwcb.supabase.co/storage/v1/object/public/cikalbakalstorage/product/", request.ImageFileName)
 	_, err = os.Stat(imagePath)
 	if err != nil {
 		if os.IsNotExist(err) {
@@ -114,7 +114,7 @@ func (ps *productService) EditProduct(ctx context.Context, request *product.Edit
 	}
 
 	if productEntity.ImageFileName != request.ImageFileName {
-		newImagePath := filepath.Join("storage", "product", request.ImageFileName)
+		newImagePath := filepath.Join("https://lqskpaecrquwwsezlwcb.supabase.co/storage/v1/object/public/cikalbakalstorage/product/", request.ImageFileName)
 		_, err = os.Stat(newImagePath)
 		if err != nil {
 			if os.IsNotExist(err) {
@@ -126,7 +126,7 @@ func (ps *productService) EditProduct(ctx context.Context, request *product.Edit
 			return nil, err
 		}
 
-		oldImagePath := filepath.Join("storage", "product", productEntity.ImageFileName)
+		oldImagePath := filepath.Join("https://lqskpaecrquwwsezlwcb.supabase.co/storage/v1/object/public/cikalbakalstorage/product/", productEntity.ImageFileName)
 		err = os.Remove(oldImagePath)
 		if err != nil {
 			return nil, err
