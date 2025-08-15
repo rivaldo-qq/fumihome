@@ -19,7 +19,7 @@ import (
 
 func handleGetFileName(c *fiber.Ctx) error {
 	fileNameParam := c.Params("filename")
-	filePath := path.Join("storage", "product", fileNameParam)
+	filePath := path.Join("https://lqskpaecrquwwsezlwcb.supabase.co/storage/v1/object/public/cikalbakalstorage/product/", fileNameParam)
 	if _, err := os.Stat(filePath); err != nil {
 		if os.IsNotExist(err) {
 			return c.Status(http.StatusNotFound).SendString("Not Found")
@@ -53,7 +53,7 @@ func main() {
 	webhookHandler := handler.NewWebhookHandler(webhookService)
 
 	app.Use(cors.New())
-	app.Get("/storage/product/:filename", handleGetFileName)
+	app.Get("https://lqskpaecrquwwsezlwcb.supabase.co/storage/v1/object/public/cikalbakalstorage/product/:filename", handleGetFileName)
 	app.Post("/product/upload", handler.UploadProductImageHandler)
 	app.Post("/webhook/xendit/invoice", webhookHandler.ReceiveInvoice)
 
